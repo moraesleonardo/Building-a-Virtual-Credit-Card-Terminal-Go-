@@ -1,17 +1,17 @@
 package main
 
 import (
-	"log"
-	"text/template"
 	"flag"
-	"os"
 	"fmt"
-	"time"
+	"log"
 	"net/http"
-
+	"os"
+	"text/template"
+	"time"
 )
 
 const version = "1.0.0"
+
 //const cssVersion = "1"
 
 type config struct {
@@ -27,29 +27,27 @@ type config struct {
 	}
 }
 type application struct {
-	config  config
-	infoLog *log.Logger
-	errorLog *log.Logger
+	config        config
+	infoLog       *log.Logger
+	errorLog      *log.Logger
 	templateCache map[string]*template.Template
-	version string
+	version       string
 }
 
-func(app *application) serve() error {
-	srv := &http.Server {
-		Addr: fmt.Sprintf(":%d", app.config.port),
-		Handler: app.routes(),
-		IdleTimeout: 30 * time.Second,
-		ReadTimeout: 10 * time.Second,
-		ReadHeaderTimeout: 5 *time.Second,
-		WriteTimeout: 5 *time.Second,
+func (app *application) serve() error {
+	srv := &http.Server{
+		Addr:              fmt.Sprintf(":%d", app.config.port),
+		Handler:           app.routes(),
+		IdleTimeout:       30 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
+		WriteTimeout:      5 * time.Second,
 	}
 	app.infoLog.Printf("Starting HTTP server in %s on port %d", app.config.env, app.config.port)
 
 	return srv.ListenAndServe()
 
-
 }
-
 
 func main() {
 	var cfg config
@@ -59,21 +57,21 @@ func main() {
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
 
 	flag.Parse()
-	
+
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
 	cfg.stripe.secret = os.Getenv("STRIPE_SECRET")
 
-	infoLog := log.New(os.Stdout,"INFO\t", log.Ldate|log.Ltime)
-	errorLog := log.New(os.Stdout,"ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	tc:= make(map[string]*template.Template)
+	tc := make(map[string]*template.Template)
 
 	app := &application{
-		config: cfg,
-		infoLog: infoLog,
-		errorLog: errorLog,
-		templateCache:tc,
-		version: version,
+		config:        cfg,
+		infoLog:       infoLog,
+		errorLog:      errorLog,
+		templateCache: tc,
+		version:       version,
 	}
 
 	err := app.serve()
