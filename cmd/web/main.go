@@ -6,21 +6,21 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"text/template"
+	"html/template"
 	"time"
 )
 
 const version = "1.0.0"
 
-//const cssVersion = "1"
+const cssVersion = "1"
 
 type config struct {
 	port int
 	env  string
 	api  string
-	//db   struct {
-	//	dsn string
-	//}
+	db   struct {
+		dsn string
+	}
 	stripe struct {
 		secret string
 		key    string
@@ -43,7 +43,7 @@ func (app *application) serve() error {
 		ReadHeaderTimeout: 5 * time.Second,
 		WriteTimeout:      5 * time.Second,
 	}
-	app.infoLog.Printf("Starting HTTP server in %s on port %d", app.config.env, app.config.port)
+	app.infoLog.Println(fmt.Sprintf("Starting HTTP server in %s on port %d", app.config.env, app.config.port))
 
 	return srv.ListenAndServe()
 
